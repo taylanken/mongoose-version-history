@@ -1,0 +1,36 @@
+{
+  "name": "mongoose-version-history",
+  "version": "0.0.1",
+  "description": "Mongoose plugin that tracks version history of documents by storing diffs in JSON Patch format",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/taylanken/mongoose-version-history.git"
+  },
+  "keywords": [
+    "mongo",
+    "mongodb",
+    "mongoose",
+    "version",
+    "history",
+    "versionhistory",
+    "documenthistory",
+    "documentversion",
+    "diff",
+    "patch",
+    "jsondiff",
+    "jsonpatch"
+  ],
+  "author": "Taylan Kenanoglu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/taylanken/mongoose-version-history/issues"
+  },
+  "homepage": "https://github.com/taylanken/mongoose-version-history#readme",
+  "dependencies": {
+    "diff-to-patch": "^0.1.0"
+  }
+}
