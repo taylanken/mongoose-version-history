@@ -31,7 +31,8 @@
   },
   "homepage": "https://github.com/taylanken/mongoose-version-history#readme",
   "dependencies": {
-    "diff-to-patch": "^0.1.0"
+    "diff-to-patch": "^0.1.0",
+    "json-patch": "^0.7.0"
   },
   "devDependencies": {
     "mongoose": "^4.13.7"

@@ -1,5 +1,7 @@
-const Schema = require('mongoose').Schema;
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 const versionHistory = require('../index');
+
 
 let Customer = new Schema({
     name: {
