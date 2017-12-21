@@ -65,8 +65,32 @@ module.exports = exports = function(schema, options) {
                 version.save(next);
             });
         }
-
-
-
     });
+
+    schema.pre('update', function(next) {
+        var historyModel = getVersionModel((options && options.collection) ? options.collection : this.collection.name + '_h');
+
+        this[versionKey]++;
+        var newVersion = this.toObject();
+
+        historyModel.find({ parent: this._id }).sort({ version: 1 }).then(function(versions) {
+            var patches = [];
+            for (var i = 0; i < versions.length; i++) {
+                patches = patches.concat(versions[i].patches);
+            }
+
+            var previousVersion = jsonPatch.apply({}, patches);
+
+            var patches = diffToPatch(previousVersion, newVersion);
+
+            var version = new historyModel({
+                parent: newVersion._id,
+                version: newVersion[versionKey],
+                patches: patches
+            });
+
+            version.save(next);
+        });
+    });
+
 }
