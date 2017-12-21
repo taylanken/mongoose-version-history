@@ -49,7 +49,7 @@ The name of the version-field that gets added to the schema. Defaults to ```docu
 
 ### collection
 
-The name of the collection the history gets stored to. Defaults to the name of the schema's collection with a ```_h``` appended to it.
+The name of the collection the history gets stored to. Defaults to the name of the schema's collection with an ```_h``` appended to it.
 
 ## Retrieving specific document version
 
