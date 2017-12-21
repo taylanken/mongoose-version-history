@@ -76,3 +76,28 @@ User.findOne({...}, (err, user) => {
     });
 });
 ```
+
+## Accessing the history collection directly
+
+To access the history collection directy, you can call the ```getHistoryModel`` function on a model.
+It will return a mongoose-model of the history collection:
+
+```javascript
+let UserHistory = User.getHistoryModel();
+UserHistory.find({...});
+...
+```
+
+Each entry in the history collection represents a changeset (= one or more JSON Patches) and has the following schema:
+
+```javascript
+var ChangeSet = new mongoose.Schema({
+    parent: mongoose.SchemaTypes.ObjectId, // The ID of the source-document this changeset is attached to
+    version: Number, // The version this changeset was created for
+    patches: [{ // Array of JSON-Patches representing the change
+        op: String, // Patch-operation
+        path: String, // Patch-patch
+        value: mongoose.SchemaTypes.Mixed // Patch-value
+    }]
+});
+```
