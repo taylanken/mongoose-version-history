@@ -8,7 +8,7 @@ function getVersionModel(collectionName) {
         return mongoose.models[collectionName];
     }
 
-    var Version = new mongoose.Schema({
+    var ChangeSet = new mongoose.Schema({
         parent: mongoose.SchemaTypes.ObjectId,
         version: Number,
         patches: [{
@@ -18,7 +18,7 @@ function getVersionModel(collectionName) {
         }]
     });
 
-    return mongoose.model(collectionName, Version);
+    return mongoose.model(collectionName, ChangeSet);
 }
 
 module.exports = exports = function(schema, options) {
