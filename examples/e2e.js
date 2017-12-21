@@ -22,7 +22,7 @@ let user = new User({
     phone: '+1 (831) 418-3122'
 });
 
-user.save().then((user) => {
+user.save().then(user => {
     console.log('V1 created!');
 
     user.phone = '+1 (872) 735-9954';
@@ -30,6 +30,19 @@ user.save().then((user) => {
     user.name.last = 'McKnight';
 
     return user.save();
-}).then(() => {
+}).then(user => {
     console.log('V2 created!');
+
+    user.phone = null;
+    return user.save();
+}).then(user => {
+    console.log('V3 created!');
+
+    return user.getVersion(2);
+}).then(userV2 => {
+    console.log('Reconstructed V2!');
+
+    console.log(userV2);
+}).catch(err => {
+    console.error(err.message);
 });

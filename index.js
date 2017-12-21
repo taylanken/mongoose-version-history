@@ -112,7 +112,8 @@ module.exports = exports = function(schema, options) {
         return historyModel
             .where('parent').equals(this._id)
             .where('version').lte(versionNumber)
-            .asc('version')
+            .select('patches')
+            .sort({ version: 1 })
             .exec()
             .then(function(results) {
                 var patches = [];
