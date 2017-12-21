@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
-const Customer = require('./customer.model');
+const User = require('./customer.model');
 
 mongoose.connect('mongodb://localhost:27017/dbversion-e2e', {
     useMongoClient: true
 });
 
-let customer = new Customer({
+let user = new User({
     name: {
         first: 'Wright',
         last: 'Mcknight'
@@ -22,14 +22,14 @@ let customer = new Customer({
     phone: '+1 (831) 418-3122'
 });
 
-customer.save().then((customer) => {
+user.save().then((user) => {
     console.log('V1 created!');
 
-    customer.phone = '+1 (872) 735-9954';
-    customer.address.no = '78';
-    customer.name.last = 'McKnight';
+    user.phone = '+1 (872) 735-9954';
+    user.address.no = '78';
+    user.name.last = 'McKnight';
 
-    return customer.save();
+    return user.save();
 }).then(() => {
     console.log('V2 created!');
 });

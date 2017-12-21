@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 const versionHistory = require('../index');
 
 
-let Customer = new Schema({
+let User = new Schema({
     name: {
         first: String,
         last: String
@@ -19,6 +19,6 @@ let Customer = new Schema({
     email: String,
     phone: String
 });
-Customer.plugin(versionHistory);
+User.plugin(versionHistory);
 
-module.exports = exports = mongoose.model('Customer', Customer);
+module.exports = exports = mongoose.model('User', User);
