@@ -1,6 +1,6 @@
 {
     "name": "mongoose-version-history",
-    "version": "0.1.1",
+    "version": "0.2.1",
     "description": "Mongoose plugin that tracks version history of documents by storing diffs in JSON Patch format.",
     "main": "index.js",
     "scripts": {

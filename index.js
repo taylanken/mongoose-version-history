@@ -2,27 +2,28 @@ var mongoose = require('mongoose');
 var diffToPatch = require('diff-to-patch');
 var jsonPatch = require('json-patch');
 
-function getVersionModel(collectionName) {
-
-    if (mongoose.models[collectionName]) {
-        return mongoose.models[collectionName];
-    }
-
-    var ChangeSet = new mongoose.Schema({
-        parent: mongoose.SchemaTypes.ObjectId,
-        version: Number,
-        patches: [{
-            op: String,
-            path: String,
-            value: mongoose.SchemaTypes.Mixed
-        }]
-    });
-
-    return mongoose.model(collectionName, ChangeSet);
-}
-
 module.exports = exports = function(schema, options) {
     var versionKey = (options && options.versionKey) ? options.versionKey : 'documentVersion';
+    var connection = (options && options.connection) ? options.connection : mongoose;
+
+    function getVersionModel(collectionName) {
+
+        if (connection.models[collectionName]) {
+            return connection.model(collectionName);
+        }
+
+        var ChangeSet = new mongoose.Schema({
+            parent: mongoose.SchemaTypes.ObjectId,
+            version: Number,
+            patches: [{
+                op: String,
+                path: String,
+                value: mongoose.SchemaTypes.Mixed
+            }]
+        });
+
+        return connection.model(collectionName, ChangeSet);
+    }
 
     schemaMod = {};
     schemaMod[versionKey] = Number;
