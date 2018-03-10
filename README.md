@@ -51,6 +51,39 @@ The name of the version-field that gets added to the schema. Defaults to ```docu
 
 The name of the collection the history gets stored to. Defaults to the name of the schema's collection with an ```_h``` appended to it.
 
+### connection
+
+The database connection object. This option is required if the database is being connected via ```mongoose.createConnection``` instead of ```mongoose.connect```.
+
+```javascript
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const versionHistory = require('mongoose-version-history');
+
+let db = mongoose.createConnection('mongodb://my-database');
+
+let User = new Schema({
+    name: {
+        first: String,
+        last: String
+    },
+    address: {
+        street: String,
+        no: String,
+        zipCode: String,
+        city: String,
+        country: String
+    },
+    birthdate: Date,
+    email: String,
+    phone: String
+});
+
+User.plugin(versionHistory, {
+    connection: db
+});
+```
+
 ## Retrieving specific document version
 
 To retrieve a specific version of your document, you can use the ```getVersion``` function, passing the version number you want to access.

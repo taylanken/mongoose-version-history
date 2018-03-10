@@ -1,9 +1,7 @@
 const mongoose = require('mongoose');
 const User = require('./customer.model');
 
-mongoose.connect('mongodb://localhost:27017/dbversion-e2e', {
-    useMongoClient: true
-});
+let connection = mongoose.connect('mongodb://localhost:27017/dbversion-e2e');
 
 let user = new User({
     name: {
