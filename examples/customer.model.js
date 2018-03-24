@@ -19,6 +19,8 @@ let User = new Schema({
     email: String,
     phone: String
 });
-User.plugin(versionHistory);
+User.plugin(versionHistory, {
+    trackDate: true
+});
 
 module.exports = exports = mongoose.model('User', User);

@@ -12,7 +12,7 @@ module.exports = exports = function(schema, options) {
             return connection.model(collectionName);
         }
 
-        var ChangeSet = new mongoose.Schema({
+        var schemaConfig = {
             parent: mongoose.SchemaTypes.ObjectId,
             version: Number,
             patches: [{
@@ -20,7 +20,13 @@ module.exports = exports = function(schema, options) {
                 path: String,
                 value: mongoose.SchemaTypes.Mixed
             }]
-        });
+        };
+
+        if (options && options.trackDate) {
+            schemaConfig.date = Date;
+        }
+
+        var ChangeSet = new mongoose.Schema(schemaConfig);
 
         return connection.model(collectionName, ChangeSet);
     }
@@ -36,11 +42,17 @@ module.exports = exports = function(schema, options) {
             this[versionKey] = 1;
             var patches = diffToPatch({}, this.toObject());
 
-            var version = new historyModel({
+            var versionObject = {
                 parent: this._id,
                 version: this[versionKey],
                 patches: patches
-            });
+            }
+
+            if (options && options.trackDate) {
+                versionObject.date = new Date();
+            }
+
+            var version = new historyModel(versionObject);
 
             version.save(next);
         } else {
@@ -57,11 +69,17 @@ module.exports = exports = function(schema, options) {
 
                 var patches = diffToPatch(previousVersion, newVersion);
 
-                var version = new historyModel({
+                var versionObject = {
                     parent: newVersion._id,
                     version: newVersion[versionKey],
                     patches: patches
-                });
+                };
+
+                if (options && options.trackDate) {
+                    versionObject.date = new Date();
+                }
+
+                var version = new historyModel(versionObject);
 
                 version.save(next);
             });
@@ -84,11 +102,17 @@ module.exports = exports = function(schema, options) {
 
             var patches = diffToPatch(previousVersion, newVersion);
 
-            var version = new historyModel({
+            var versionObject = {
                 parent: newVersion._id,
                 version: newVersion[versionKey],
                 patches: patches
-            });
+            };
+
+            if (options && options.trackDate) {
+                versionObject.date = new Date();
+            }
+
+            var version = new historyModel(versionObject);
 
             version.save(next);
         });
