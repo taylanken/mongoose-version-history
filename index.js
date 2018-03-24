@@ -43,9 +43,13 @@ module.exports = exports = function(schema, options) {
 
     schema.pre('save', function(next) {
         var historyModel = getVersionModel((options && options.collection) ? options.collection : this.collection.name + '_h');
+        var date = new Date();
 
         if (this.isNew) {
             this[versionKey] = 1;
+            if (trackDate && addDateToDocument) {
+                this[versionDateKey] = date;
+            }
             var patches = diffToPatch({}, this.toObject());
 
             var versionObject = {
@@ -55,10 +59,6 @@ module.exports = exports = function(schema, options) {
             }
 
             if (trackDate) {
-                var date = new Date();
-                if (addDateToDocument) {
-                    this[versionDateKey] = date;
-                }
                 versionObject.date = date;
             }
 
@@ -67,6 +67,9 @@ module.exports = exports = function(schema, options) {
             version.save(next);
         } else {
             this[versionKey]++;
+            if (trackDate && addDateToDocument) {
+                this[versionDateKey] = date;
+            }
             var newVersion = this.toObject();
 
             historyModel.find({ parent: this._id }).sort({ version: 1 }).then(function(versions) {
@@ -86,10 +89,6 @@ module.exports = exports = function(schema, options) {
                 };
 
                 if (trackDate) {
-                    var date = new Date();
-                    if (addDateToDocument) {
-                        this[versionDateKey] = date;
-                    }
                     versionObject.date = date;
                 }
 
@@ -102,8 +101,12 @@ module.exports = exports = function(schema, options) {
 
     schema.pre('update', function(next) {
         var historyModel = getVersionModel((options && options.collection) ? options.collection : this.collection.name + '_h');
+        var date = new Date();
 
         this[versionKey]++;
+        if (trackDate && addDateToDocument) {
+            this[versionDateKey] = date;
+        }
         var newVersion = this.toObject();
 
         historyModel.find({ parent: this._id }).sort({ version: 1 }).then(function(versions) {
@@ -123,10 +126,6 @@ module.exports = exports = function(schema, options) {
             };
 
             if (trackDate) {
-                var date = new Date();
-                if (addDateToDocument) {
-                    this[versionDateKey] = date;
-                }
                 versionObject.date = date;
             }
 
