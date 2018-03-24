@@ -4,7 +4,10 @@ var jsonPatch = require('json-patch');
 
 module.exports = exports = function(schema, options) {
     var versionKey = (options && options.versionKey) ? options.versionKey : 'documentVersion';
+    var versionDateKey = (options && options.versionDateKey) ? options.versionDateKey : 'documentVersionDate';
     var connection = (options && options.connection) ? options.connection : mongoose;
+    var trackDate = (options && options.trackDate) ? true : false;
+    var addDateToDocument = (options && options.addDateToDocument) ? true : false;
 
     function getVersionModel(collectionName) {
 
@@ -22,7 +25,7 @@ module.exports = exports = function(schema, options) {
             }]
         };
 
-        if (options && options.trackDate) {
+        if (trackDate) {
             schemaConfig.date = Date;
         }
 
@@ -33,6 +36,9 @@ module.exports = exports = function(schema, options) {
 
     schemaMod = {};
     schemaMod[versionKey] = Number;
+    if (addDateToDocument) {
+        schemaMod[versionDateKey] = Date;
+    }
     schema.add(schemaMod);
 
     schema.pre('save', function(next) {
@@ -48,8 +54,12 @@ module.exports = exports = function(schema, options) {
                 patches: patches
             }
 
-            if (options && options.trackDate) {
-                versionObject.date = new Date();
+            if (trackDate) {
+                var date = new Date();
+                if (addDateToDocument) {
+                    this[versionDateKey] = date;
+                }
+                versionObject.date = date;
             }
 
             var version = new historyModel(versionObject);
@@ -75,14 +85,18 @@ module.exports = exports = function(schema, options) {
                     patches: patches
                 };
 
-                if (options && options.trackDate) {
-                    versionObject.date = new Date();
+                if (trackDate) {
+                    var date = new Date();
+                    if (addDateToDocument) {
+                        this[versionDateKey] = date;
+                    }
+                    versionObject.date = date;
                 }
 
                 var version = new historyModel(versionObject);
 
                 version.save(next);
-            });
+            }.bind(this));
         }
     });
 
@@ -108,14 +122,18 @@ module.exports = exports = function(schema, options) {
                 patches: patches
             };
 
-            if (options && options.trackDate) {
-                versionObject.date = new Date();
+            if (trackDate) {
+                var date = new Date();
+                if (addDateToDocument) {
+                    this[versionDateKey] = date;
+                }
+                versionObject.date = date;
             }
 
             var version = new historyModel(versionObject);
 
             version.save(next);
-        });
+        }.bind(this));
     });
 
     /**

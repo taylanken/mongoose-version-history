@@ -20,7 +20,8 @@ let User = new Schema({
     phone: String
 });
 User.plugin(versionHistory, {
-    trackDate: true
+    trackDate: true,
+    addDateToDocument: true
 });
 
 module.exports = exports = mongoose.model('User', User);
