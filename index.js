@@ -4,7 +4,10 @@ var jsonPatch = require('json-patch');
 
 module.exports = exports = function(schema, options) {
     var versionKey = (options && options.versionKey) ? options.versionKey : 'documentVersion';
+    var versionDateKey = (options && options.versionDateKey) ? options.versionDateKey : 'documentVersionDate';
     var connection = (options && options.connection) ? options.connection : mongoose;
+    var trackDate = (options && options.trackDate) ? true : false;
+    var addDateToDocument = (options && options.addDateToDocument) ? true : false;
 
     function getVersionModel(collectionName) {
 
@@ -12,7 +15,7 @@ module.exports = exports = function(schema, options) {
             return connection.model(collectionName);
         }
 
-        var ChangeSet = new mongoose.Schema({
+        var schemaConfig = {
             parent: mongoose.SchemaTypes.ObjectId,
             version: Number,
             patches: [{
@@ -20,31 +23,53 @@ module.exports = exports = function(schema, options) {
                 path: String,
                 value: mongoose.SchemaTypes.Mixed
             }]
-        });
+        };
+
+        if (trackDate) {
+            schemaConfig.date = Date;
+        }
+
+        var ChangeSet = new mongoose.Schema(schemaConfig);
 
         return connection.model(collectionName, ChangeSet);
     }
 
     schemaMod = {};
     schemaMod[versionKey] = Number;
+    if (addDateToDocument) {
+        schemaMod[versionDateKey] = Date;
+    }
     schema.add(schemaMod);
 
     schema.pre('save', function(next) {
         var historyModel = getVersionModel((options && options.collection) ? options.collection : this.collection.name + '_h');
+        var date = new Date();
 
         if (this.isNew) {
             this[versionKey] = 1;
+            if (trackDate && addDateToDocument) {
+                this[versionDateKey] = date;
+            }
             var patches = diffToPatch({}, this.toObject());
 
-            var version = new historyModel({
+            var versionObject = {
                 parent: this._id,
                 version: this[versionKey],
                 patches: patches
-            });
+            }
+
+            if (trackDate) {
+                versionObject.date = date;
+            }
+
+            var version = new historyModel(versionObject);
 
             version.save(next);
         } else {
             this[versionKey]++;
+            if (trackDate && addDateToDocument) {
+                this[versionDateKey] = date;
+            }
             var newVersion = this.toObject();
 
             historyModel.find({ parent: this._id }).sort({ version: 1 }).then(function(versions) {
@@ -57,21 +82,31 @@ module.exports = exports = function(schema, options) {
 
                 var patches = diffToPatch(previousVersion, newVersion);
 
-                var version = new historyModel({
+                var versionObject = {
                     parent: newVersion._id,
                     version: newVersion[versionKey],
                     patches: patches
-                });
+                };
+
+                if (trackDate) {
+                    versionObject.date = date;
+                }
+
+                var version = new historyModel(versionObject);
 
                 version.save(next);
-            });
+            }.bind(this));
         }
     });
 
     schema.pre('update', function(next) {
         var historyModel = getVersionModel((options && options.collection) ? options.collection : this.collection.name + '_h');
+        var date = new Date();
 
         this[versionKey]++;
+        if (trackDate && addDateToDocument) {
+            this[versionDateKey] = date;
+        }
         var newVersion = this.toObject();
 
         historyModel.find({ parent: this._id }).sort({ version: 1 }).then(function(versions) {
@@ -84,14 +119,20 @@ module.exports = exports = function(schema, options) {
 
             var patches = diffToPatch(previousVersion, newVersion);
 
-            var version = new historyModel({
+            var versionObject = {
                 parent: newVersion._id,
                 version: newVersion[versionKey],
                 patches: patches
-            });
+            };
+
+            if (trackDate) {
+                versionObject.date = date;
+            }
+
+            var version = new historyModel(versionObject);
 
             version.save(next);
-        });
+        }.bind(this));
     });
 
     /**

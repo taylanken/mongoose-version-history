@@ -84,6 +84,18 @@ User.plugin(versionHistory, {
 });
 ```
 
+### trackDate
+
+If set to ```true```, the date of creation will be tracked for each version, causing the __history-collection__ to have an additional field ```date```. If you want to redundantly store the date of the current version in the document itself aswell, additionally enable the ```addDateToDocument```-option.
+
+### addDateToDocument
+
+If set to ```true```, and if the ```trackDate```-option is enabled, the date of the current version will be reduntantly stored in the actual document aswell.
+
+### versionDateKey
+
+The name of the versionDate-field that gets added to the schema if the ```addDateToDocument```-option is enabled. Defaults to ```documentVersionDate```.
+
 ## Retrieving specific document version
 
 To retrieve a specific version of your document, you can use the ```getVersion``` function, passing the version number you want to access.
@@ -131,6 +143,7 @@ var ChangeSet = new mongoose.Schema({
         op: String, // Patch-operation
         path: String, // Patch-patch
         value: mongoose.SchemaTypes.Mixed // Patch-value
-    }]
+    }],
+    date: Date // Only if the trackDate-option is enabled
 });
 ```
