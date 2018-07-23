@@ -162,7 +162,11 @@ module.exports = exports = function(schema, options) {
                 for (var i = 0; i < results.length; i++) {
                     patches = patches.concat(results[i].patches);
                 }
-
+                
+                if (cb instanceof Function) {
+                    cb(null, jsonPatch.apply({}, patches));
+                }
+            
                 return jsonPatch.apply({}, patches);
             }).catch(function(err) {
                 if (cb instanceof Function) {
